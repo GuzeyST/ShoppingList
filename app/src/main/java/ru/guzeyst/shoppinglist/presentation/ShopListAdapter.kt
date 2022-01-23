@@ -32,7 +32,7 @@ class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>
         val idLayout = when (viewType) {
             IS_ENABLED -> R.layout.shop_item_enabled
             IS_DISABLED -> R.layout.shop_item_disabled
-            else -> throw RuntimeException("Unknow view type $viewType")
+            else -> throw RuntimeException("Unknown view type $viewType")
         }
 
         val view = LayoutInflater.from(parent.context)
