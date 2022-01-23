@@ -1,31 +1,41 @@
 package ru.guzeyst.shoppinglist.presentation
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
-import ru.guzeyst.shoppinglist.R
 import ru.guzeyst.shoppinglist.databinding.ActivityMainBinding
-import ru.guzeyst.shoppinglist.domain.ShopItem
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var viewModel: MainViewModel
-    private var count = 0
+    private lateinit var adapterForRv: ShopListAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        setupRecyclerView()
         viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
         viewModel.shopList.observe(this, {
-            Log.d("MyTag", it.toString())
-            if(count == 0) {
-                count++
-                val shopItem = it[0]
-                viewModel.changeEnableState(shopItem)
-            }
+            adapterForRv.shopList = it
         })
+    }
+
+    private fun setupRecyclerView() {
+        val recyclerView = binding.recyclerView
+        adapterForRv = ShopListAdapter()
+
+        with(recyclerView) {
+            adapter = adapterForRv
+            recycledViewPool.setMaxRecycledViews(
+                ShopListAdapter.IS_ENABLED,
+                ShopListAdapter.MAX_POOL_SIZE
+            )
+            recycledViewPool.setMaxRecycledViews(
+                ShopListAdapter.IS_DISABLED,
+                ShopListAdapter.MAX_POOL_SIZE
+            )
+        }
     }
 }
