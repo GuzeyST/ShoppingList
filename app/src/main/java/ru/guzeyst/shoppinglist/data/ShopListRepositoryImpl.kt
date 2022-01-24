@@ -6,16 +6,17 @@ import ru.guzeyst.shoppinglist.UNDEFINED_ID
 import ru.guzeyst.shoppinglist.domain.ShopItem
 import ru.guzeyst.shoppinglist.domain.ShopListRepository
 import java.lang.RuntimeException
+import kotlin.random.Random
 
 object ShopListRepositoryImpl : ShopListRepository {
 
-    private val shopList = mutableListOf<ShopItem>()
+    private val shopList = sortedSetOf<ShopItem>({ o1, o2 -> o1.id.compareTo(o2.id) })
     private var autoincrement = 0
     private val shopListLD = MutableLiveData<List<ShopItem>>()
 
     init {
-        for(i in 0..10){
-            val shopItem = ShopItem("Name $i", i, true)
+        for(i in 0..100){
+            val shopItem = ShopItem("Name $i", i, Random.nextBoolean())
             addShopItem(shopItem)
         }
     }
