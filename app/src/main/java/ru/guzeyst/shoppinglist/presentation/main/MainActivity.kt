@@ -1,12 +1,12 @@
-package ru.guzeyst.shoppinglist.presentation
+package ru.guzeyst.shoppinglist.presentation.main
 
 import android.os.Bundle
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import ru.guzeyst.shoppinglist.databinding.ActivityMainBinding
+import ru.guzeyst.shoppinglist.presentation.shopItem.ShopItemActivity
 
 class MainActivity : AppCompatActivity() {
 
@@ -23,6 +23,17 @@ class MainActivity : AppCompatActivity() {
         viewModel.shopList.observe(this, {
             adapterForRv.submitList(it)
         })
+
+        binding.fbAddNewItem.setOnClickListener{
+            startActivity(ShopItemActivity.newIntentAddItem(this))
+        }
+    }
+
+    fun startAddActivity(): (Unit) -> Unit{
+         val funStartActivity: (Unit) -> Unit = {
+
+        }
+        return funStartActivity
     }
 
     private fun setupRecyclerView() {
@@ -70,7 +81,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupClickListener() {
         adapterForRv.shopItemClickListener = {
-            Toast.makeText(this, "$it", Toast.LENGTH_SHORT).show()
+            startActivity(ShopItemActivity.newIntentEditItem(this, it.id))
         }
     }
 
