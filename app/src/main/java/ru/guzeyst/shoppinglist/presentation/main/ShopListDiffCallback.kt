@@ -1,4 +1,4 @@
-package ru.guzeyst.shoppinglist.presentation
+package ru.guzeyst.shoppinglist.presentation.main
 
 import androidx.recyclerview.widget.DiffUtil
 import ru.guzeyst.shoppinglist.domain.ShopItem

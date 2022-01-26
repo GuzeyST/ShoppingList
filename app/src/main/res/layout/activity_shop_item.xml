@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ShopItemActivity">
+    tools:context=".presentation.shopItem.ShopItemActivity">
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/til_titleName"
@@ -18,7 +18,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_chainStyle="packed">
 
-        <TextView
+        <EditText
             android:id="@+id/tv_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -40,11 +40,11 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/til_titleName">
 
-        <TextView
+        <EditText
             android:id="@+id/tv_count"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/coton"
+            android:hint="@string/count"
             android:inputType="numberDecimal" />
 
 

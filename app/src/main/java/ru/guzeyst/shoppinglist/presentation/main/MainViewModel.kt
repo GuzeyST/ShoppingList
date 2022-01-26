@@ -1,4 +1,4 @@
-package ru.guzeyst.shoppinglist.presentation
+package ru.guzeyst.shoppinglist.presentation.main
 
 import androidx.lifecycle.ViewModel
 import ru.guzeyst.shoppinglist.data.ShopListRepositoryImpl

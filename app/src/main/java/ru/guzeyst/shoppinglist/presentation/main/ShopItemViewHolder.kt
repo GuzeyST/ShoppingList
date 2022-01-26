@@ -1,4 +1,4 @@
-package ru.guzeyst.shoppinglist.presentation
+package ru.guzeyst.shoppinglist.presentation.main
 
 import android.view.View
 import android.widget.TextView
