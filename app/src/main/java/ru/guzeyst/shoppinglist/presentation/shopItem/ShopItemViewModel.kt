@@ -35,27 +35,27 @@ class ShopItemViewModel : ViewModel() {
         _shopItem.value = item
     }
 
-    fun editItem(inputName: String?, inputCount: String?) {
+    fun editItem(inputName: String, inputCount: String) {
         val name = parseName(inputName)
         val count = parseInt(inputCount)
         val fieldsValue = validateInput(name, count)
         if (fieldsValue) {
             _shopItem.value?.let {
-                val item = it.copy(name, count)
+                val item = it.copy(name = name, count = count)
                 editShopItem.editShopItem(item)
                 finishWork()
             }
         }
     }
 
-    fun addItem(inputName: String?, inputCount: String?) {
+    fun addItem(inputName: String, inputCount: String) {
         val name = parseName(inputName)
         val count = parseInt(inputCount)
         val fieldsValue = validateInput(name, count)
         if (fieldsValue) {
             addShopItem.addShopItem(ShopItem(name, count))
+            finishWork()
         }
-        finishWork()
     }
 
     private fun parseName(inputName: String?): String {
@@ -92,7 +92,7 @@ class ShopItemViewModel : ViewModel() {
         _errorInputCount.value = false
     }
 
-    fun finishWork(){
+    private fun finishWork(){
         _readyToClose.value = Unit
     }
 }
