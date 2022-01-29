@@ -75,6 +75,6 @@ class ShopItemActivity : AppCompatActivity(), ShopItemFragment.OnEditFinishListe
     }
 
     override fun onFinish() {
-        supportFragmentManager.popBackStack()
+        finish()
     }
 }
