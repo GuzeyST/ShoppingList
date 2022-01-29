@@ -4,18 +4,13 @@ import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.widget.Toast
-import androidx.core.text.set
-import androidx.lifecycle.ViewModelProvider
 import ru.guzeyst.shoppinglist.*
 import ru.guzeyst.shoppinglist.databinding.ActivityShopItemBinding
-import java.lang.RuntimeException
 
-class ShopItemActivity : AppCompatActivity() {
+
+class ShopItemActivity : AppCompatActivity(), ShopItemFragment.OnEditFinishListener {
     private lateinit var binding: ActivityShopItemBinding
-    private lateinit var viewModel: ShopItemViewModel
     private var screenMode = DEFAULT_MODE
     private var shopItemId = UNDEFINED_ID
 
@@ -25,51 +20,21 @@ class ShopItemActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         parseIntent()
+        if(savedInstanceState == null) launchMode()
+    }
 
-        viewModel = ViewModelProvider(this)[ShopItemViewModel::class.java]
-
-        when(screenMode){
-            MODE_EDIT -> launchEditMode()
-            MODE_ADD -> launchAddMode()
+    private fun launchMode(){
+        val fragment = when(screenMode){
+            MODE_EDIT -> ShopItemFragment.newInstanceEditItem(shopItemId)
+            MODE_ADD -> ShopItemFragment.newInstanceAddItem()
+            else -> throw RuntimeException(ERROR_UNKNOWN_EXTRA_MODE)
         }
-
-        getObservOnError()
-        setObservInputText()
-        setObservReadyCloseScreen()
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.shop_item_container, fragment)
+            .commit()
     }
 
-    private fun launchAddMode() = with(binding){
-        btSave.setOnClickListener{
-            val name = tvName.text.toString()
-            val count = tvCount.text.toString()
-            viewModel.addItem(name, count)
-        }
-    }
-
-    private fun launchEditMode() = with(binding){
-        viewModel.getItem(shopItemId)
-        viewModel.shopItem.observe(this@ShopItemActivity, {
-            tvName.setText(it.name)
-            tvCount.setText(it.count.toString())
-        })
-
-        btSave.setOnClickListener{
-            viewModel.editItem(tvName.text.toString(), tvCount.text.toString())
-        }
-    }
-
-    private fun getObservOnError() {
-        viewModel.errorInputName.observe(this@ShopItemActivity, {
-            binding.tilTitleName.error= if(it) ERROR_INPUT_NAME
-            else null
-        })
-        viewModel.errorInputCount.observe(this@ShopItemActivity, {
-            binding.tilTitleCount.error= if(it) ERROR_INPUT_COUNT
-            else null
-        })
-    }
-
-    fun parseIntent(){
+    private fun parseIntent(){
         if(!intent.hasExtra(EXTRA_SCREEN_MODE)){
             throw RuntimeException(ERROR_ABSENT_EXTRA_MODE)
         }
@@ -89,39 +54,7 @@ class ShopItemActivity : AppCompatActivity() {
        }
     }
 
-    private fun setObservInputText() {
-        binding.tvName.addTextChangedListener(object: TextWatcher{
-            override fun afterTextChanged(p0: Editable?) {
-            }
-
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-            }
-
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                viewModel.resetErrorInputName()
-            }
-        })
-
-        binding.tvCount.addTextChangedListener(object: TextWatcher{
-            override fun afterTextChanged(p0: Editable?) {
-            }
-
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-            }
-
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                viewModel.resetErrorInputCount()
-            }
-        })
-    }
-
-    private fun setObservReadyCloseScreen(){
-        viewModel.readyToCloseScreen.observe(this@ShopItemActivity, {
-            finish()
-        })
-    }
-
-    companion object{
+    companion object {
         private const val EXTRA_SCREEN_MODE = "extra_mode"
         private const val EXTRA_SHOP_ITEM_ID = "extra_shop_item_id"
         private const val MODE_ADD = "mode_add"
@@ -133,11 +66,15 @@ class ShopItemActivity : AppCompatActivity() {
             return intent
         }
 
-        fun newIntentEditItem(context: Context, itemId: Int): Intent{
+        fun newIntentEditItem(context: Context, itemId: Int): Intent {
             val intent = Intent(context, ShopItemActivity::class.java)
             intent.putExtra(EXTRA_SCREEN_MODE, MODE_EDIT)
             intent.putExtra(EXTRA_SHOP_ITEM_ID, itemId)
             return intent
         }
+    }
+
+    override fun onFinish() {
+        supportFragmentManager.popBackStack()
     }
 }

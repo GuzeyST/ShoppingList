@@ -66,8 +66,7 @@ class ShopItemViewModel : ViewModel() {
         return try {
             inputInt?.trim()?.toInt() ?: 0
         } catch (e: Exception) {
-            Log.d("MyTag", e.message ?: "")
-            0
+                Log.d("MyTag", e.message ?: "")
         }
     }
 

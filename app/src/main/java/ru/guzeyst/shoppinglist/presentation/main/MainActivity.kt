@@ -1,14 +1,18 @@
 package ru.guzeyst.shoppinglist.presentation.main
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
+import ru.guzeyst.shoppinglist.R
 import ru.guzeyst.shoppinglist.databinding.ActivityMainBinding
 import ru.guzeyst.shoppinglist.presentation.shopItem.ShopItemActivity
+import ru.guzeyst.shoppinglist.presentation.shopItem.ShopItemFragment
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditFinishListener {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var viewModel: MainViewModel
@@ -23,17 +27,25 @@ class MainActivity : AppCompatActivity() {
         viewModel.shopList.observe(this, {
             adapterForRv.submitList(it)
         })
-
         binding.fbAddNewItem.setOnClickListener{
-            startActivity(ShopItemActivity.newIntentAddItem(this))
+            if (isOnePaneMode()) {
+                startActivity(ShopItemActivity.newIntentAddItem(this))
+            }else{
+                startFragment(ShopItemFragment.newInstanceAddItem())
+            }
         }
     }
 
-    fun startAddActivity(): (Unit) -> Unit{
-         val funStartActivity: (Unit) -> Unit = {
+    private fun startFragment(fragment: Fragment){
+        supportFragmentManager.popBackStack()
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, fragment)
+            .addToBackStack(null)
+            .commit()
+    }
 
-        }
-        return funStartActivity
+    private fun isOnePaneMode(): Boolean{
+        return binding.fragmentContainer == null
     }
 
     private fun setupRecyclerView() {
@@ -81,7 +93,12 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupClickListener() {
         adapterForRv.shopItemClickListener = {
-            startActivity(ShopItemActivity.newIntentEditItem(this, it.id))
+            val id = it.id
+            if( isOnePaneMode()) {
+                startActivity(ShopItemActivity.newIntentEditItem(this, id))
+            }else{
+                startFragment(ShopItemFragment.newInstanceEditItem(id))
+            }
         }
     }
 
@@ -89,5 +106,10 @@ class MainActivity : AppCompatActivity() {
         adapterForRv.shopItemLongClickListener = {
             viewModel.changeEnableState(it)
         }
+    }
+
+    override fun onFinish() {
+        Toast.makeText(this@MainActivity, "Success", Toast.LENGTH_SHORT).show()
+        supportFragmentManager.popBackStack()
     }
 }
