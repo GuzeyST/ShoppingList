@@ -1,5 +1,7 @@
 package ru.guzeyst.shoppinglist.presentation.shopItem
 
+import android.app.Activity
+import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -17,6 +19,7 @@ class ShopItemFragment : Fragment() {
     private lateinit var viewModel: ShopItemViewModel
     private var screenMode: String = DEFAULT_MODE
     private var shopItemId: Int = UNDEFINED_ID
+    private lateinit var onEditFinishListener: OnEditFinishListener
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -28,6 +31,14 @@ class ShopItemFragment : Fragment() {
         return binding.root
     }
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if (context is OnEditFinishListener){
+            onEditFinishListener = context
+        }else{
+            throw java.lang.RuntimeException("Activity is not impl OnEditFinishListener")
+        }
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         viewModel = ViewModelProvider(this)[ShopItemViewModel::class.java]
@@ -99,6 +110,7 @@ class ShopItemFragment : Fragment() {
             }
 
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                onEditFinishListener.onFinish()
             }
 
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
@@ -121,8 +133,12 @@ class ShopItemFragment : Fragment() {
 
     private fun setObservReadyCloseScreen() {
         viewModel.readyToCloseScreen.observe(viewLifecycleOwner, {
-            activity?.onBackPressed()
+            onEditFinishListener.onFinish()
         })
+    }
+
+    interface OnEditFinishListener{
+        fun onFinish()
     }
 
     companion object {

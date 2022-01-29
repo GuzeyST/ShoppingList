@@ -4,11 +4,12 @@ import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.Toast
 import ru.guzeyst.shoppinglist.*
 import ru.guzeyst.shoppinglist.databinding.ActivityShopItemBinding
 
 
-class ShopItemActivity : AppCompatActivity() {
+class ShopItemActivity : AppCompatActivity(), ShopItemFragment.OnEditFinishListener {
     private lateinit var binding: ActivityShopItemBinding
     private var screenMode = DEFAULT_MODE
     private var shopItemId = UNDEFINED_ID
@@ -19,7 +20,7 @@ class ShopItemActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         parseIntent()
-        launchMode()
+        if(savedInstanceState == null) launchMode()
     }
 
     private fun launchMode(){
@@ -29,7 +30,7 @@ class ShopItemActivity : AppCompatActivity() {
             else -> throw RuntimeException(ERROR_UNKNOWN_EXTRA_MODE)
         }
         supportFragmentManager.beginTransaction()
-            .add(R.id.shop_item_container, fragment)
+            .replace(R.id.shop_item_container, fragment)
             .commit()
     }
 
@@ -71,5 +72,9 @@ class ShopItemActivity : AppCompatActivity() {
             intent.putExtra(EXTRA_SHOP_ITEM_ID, itemId)
             return intent
         }
+    }
+
+    override fun onFinish() {
+        supportFragmentManager.popBackStack()
     }
 }
